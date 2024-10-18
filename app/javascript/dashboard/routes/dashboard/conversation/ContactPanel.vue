@@ -11,6 +11,7 @@ import ConversationInfo from './ConversationInfo.vue';
 import CustomAttributes from './customAttributes/CustomAttributes.vue';
 import draggable from 'vuedraggable';
 import MacrosList from './Macros/List.vue';
+import ConversationOrder from './ConversationOrder.vue'
 export default {
   components: {
     AccordionItem,
@@ -19,6 +20,7 @@ export default {
     ConversationInfo,
     CustomAttributes,
     ConversationAction,
+    ConversationOrder,
     ConversationParticipant,
     Draggable: draggable,
     MacrosList,
@@ -157,7 +159,28 @@ export default {
           class="bg-white dark:bg-gray-800"
         >
           <div
-            v-if="element.name === 'conversation_actions'"
+            v-if="element.name === 'conversation_order'"
+            class="conversation--order"
+          >
+            <AccordionItem
+              :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_ORDER')"
+              :is-open="isContactSidebarItemOpen('is_conv_order_open')"
+              @click="
+                value => toggleSidebarUIState('is_conv_order_open', value)
+              "
+            >
+              <ConversationOrder
+                attribute-type="contact_attribute"
+                attribute-from="conversation_contact_panel"
+                :contact-id="contact.id"
+                :empty-state-message="
+                  $t('CONVERSATION_CUSTOM_ATTRIBUTES.NO_RECORDS_FOUND')
+                "
+              />
+            </AccordionItem>
+          </div>
+          <div
+            v-else-if="element.name === 'conversation_actions'"
             class="conversation--actions"
           >
             <AccordionItem

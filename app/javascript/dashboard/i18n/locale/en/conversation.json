@@ -275,6 +275,7 @@
     },
     "ACCORDION": {
       "CONTACT_DETAILS": "Contact Details",
+      "CONVERSATION_ORDER": "Order Details",
       "CONVERSATION_ACTIONS": "Conversation Actions",
       "CONVERSATION_LABELS": "Conversation Labels",
       "CONVERSATION_INFO": "Conversation Information",
@@ -282,6 +283,23 @@
       "PREVIOUS_CONVERSATION": "Previous Conversations",
       "MACROS": "Macros"
     }
+  },
+  "CONVERSATION_ORDER": {
+    "TITLE": "Order Information",
+    "ORDER_ID": "Order ID",
+    "STATUS": "Status",
+    "CREATED_AT": "Created At",
+    "DISPATCH_DATE": "Dispatch Date",
+    "TOTAL_PROFIT": "Total Profit",
+    "PRODUCTS_TITLE": "Order Products",
+    "PRODUCTS_TABLE": {
+      "SKU": "SKU",
+      "TITLE": "Product Title",
+      "PRICE": "Price",
+      "MARGIN": "Margin",
+      "QUANTITY": "Quantity"
+    },
+    "NO_PRODUCTS": "No products found for this order."
   },
   "CONVERSATION_CUSTOM_ATTRIBUTES": {
     "ADD_BUTTON_TEXT": "Create attribute",
