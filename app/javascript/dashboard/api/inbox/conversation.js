@@ -1,5 +1,5 @@
 /* global axios */
-import ApiClient from '../ApiClient';
+import ApiClient from '../ApiClient'
 
 class ConversationApi extends ApiClient {
   constructor() {
@@ -117,6 +117,12 @@ class ConversationApi extends ApiClient {
   updateCustomAttributes({ conversationId, customAttributes }) {
     return axios.post(`${this.url}/${conversationId}/custom_attributes`, {
       custom_attributes: customAttributes,
+    });
+  }
+
+  updateAdditionalAttributes({ conversationId, additionalAttributes }) {
+    return axios.patch(`${this.url}/${conversationId}`, {
+      additional_attributes: additionalAttributes,
     });
   }
 

@@ -1,17 +1,17 @@
-import types from '../../mutation-types';
-import ConversationApi from '../../../api/inbox/conversation';
-import MessageApi from '../../../api/inbox/message';
-import { MESSAGE_STATUS, MESSAGE_TYPE } from 'shared/constants/messages';
-import { createPendingMessage } from 'dashboard/helper/commons';
+import * as Sentry from '@sentry/vue'
+import { createPendingMessage } from 'dashboard/helper/commons'
+import { MESSAGE_STATUS, MESSAGE_TYPE } from 'shared/constants/messages'
+import ConversationApi from '../../../api/inbox/conversation'
+import MessageApi from '../../../api/inbox/message'
+import types from '../../mutation-types'
+import messageReadActions from './actions/messageReadActions'
+import messageTranslateActions from './actions/messageTranslateActions'
 import {
   buildConversationList,
+  isOnFoldersView,
   isOnMentionsView,
   isOnUnattendedView,
-  isOnFoldersView,
-} from './helpers/actionHelpers';
-import messageReadActions from './actions/messageReadActions';
-import messageTranslateActions from './actions/messageTranslateActions';
-import * as Sentry from '@sentry/vue';
+} from './helpers/actionHelpers'
 
 export const hasMessageFailedWithExternalError = pendingMessage => {
   // This helper is used to check if the message has failed with an external error.
@@ -448,7 +448,17 @@ const actions = {
       // Handle error
     }
   },
-
+  updateAdditionalAttributes: async ({ dispatch }, { conversationId, additionalAttributes }) => {
+    try {
+      const response = await ConversationApi.updateAdditionalAttributes({
+        conversationId,
+        additionalAttributes,
+      });
+      dispatch('updateConversation', response.data);
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
   setConversationFilters({ commit }, data) {
     commit(types.SET_CONVERSATION_FILTERS, data);
   },
