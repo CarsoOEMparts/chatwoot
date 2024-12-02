@@ -83,17 +83,17 @@ services:
     command: bin/vite dev
 
   postgres:
-    image: postgres:12
+    image: postgres:16
     restart: always
     ports:
       - '5432:5432'
     volumes:
       - postgres:/data/postgres
     environment:
-      - POSTGRES_DB=chatwoot
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=
-
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      
   redis:
     image: redis:alpine
     restart: always

@@ -41,7 +41,7 @@ services:
     networks: ['net']
 
   postgres:
-    image: postgres:12
+    image: postgres:16
     restart: always
     ports:
       - '${POSTGRES_PORT}:5432'
