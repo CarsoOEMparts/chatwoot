@@ -1,18 +1,20 @@
 <script setup>
-import { computed, watch, onMounted, ref } from 'vue';
-import { useMapGetter, useStore } from 'dashboard/composables/store';
-import { useUISettings } from 'dashboard/composables/useUISettings';
+import { useMapGetter, useStore } from 'dashboard/composables/store'
+import { useUISettings } from 'dashboard/composables/useUISettings'
+import { computed, onMounted, ref, watch } from 'vue'
 
-import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
-import ContactConversations from './ContactConversations.vue';
-import ConversationAction from './ConversationAction.vue';
-import ConversationParticipant from './ConversationParticipant.vue';
+import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue'
+import ContactConversations from './ContactConversations.vue'
+import ConversationAction from './ConversationAction.vue'
+import ConversationParticipant from './ConversationParticipant.vue'
 
-import ContactInfo from './contact/ContactInfo.vue';
-import ConversationInfo from './ConversationInfo.vue';
-import CustomAttributes from './customAttributes/CustomAttributes.vue';
-import Draggable from 'vuedraggable';
-import MacrosList from './Macros/List.vue';
+import Draggable from 'vuedraggable'
+import ContactInfo from './contact/ContactInfo.vue'
+import ConversationInfo from './ConversationInfo.vue'
+import ConversationOffer from './ConversationOffer.vue'
+import ConversationOrder from './ConversationOrder.vue'
+import CustomAttributes from './customAttributes/CustomAttributes.vue'
+import MacrosList from './Macros/List.vue'
 
 const props = defineProps({
   conversationId: {
@@ -67,6 +69,13 @@ const getContactDetails = () => {
   }
 };
 
+const order = computed(() => {
+  return currentChat.value.additional_attributes?.order;
+});
+const offer = computed(() => {
+  return currentChat.value.additional_attributes?.offer;
+});
+
 watch(conversationId, (newConversationId, prevConversationId) => {
   if (newConversationId && newConversationId !== prevConversationId) {
     getContactDetails();
@@ -113,7 +122,49 @@ onMounted(() => {
         <template #item="{ element }">
           <div :key="element.name" class="bg-white dark:bg-gray-800">
             <div
-              v-if="element.name === 'conversation_actions'"
+              v-if="element.name === 'conversation_offer' && offer"
+              class="conversation--offer"
+            >
+              <AccordionItem
+                :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_OFFER')"
+                :is-open="isContactSidebarItemOpen('is_conv_offer_open')"
+                @toggle="
+                  value => toggleSidebarUIState('is_conv_offer_open', value)
+                "
+              >
+                <ConversationOffer
+                  attribute-type="contact_attribute"
+                  attribute-from="conversation_contact_panel"
+                  :contact-id="contact.id"
+                  :empty-state-message="
+                    $t('CONVERSATION_CUSTOM_ATTRIBUTES.NO_RECORDS_FOUND')
+                  "
+                />
+              </AccordionItem>
+            </div>
+            <div
+              v-else-if="element.name === 'conversation_order' && order"
+              class="conversation--order"
+            >
+              <AccordionItem
+                :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_ORDER')"
+                :is-open="isContactSidebarItemOpen('is_conv_order_open')"
+                @toggle="
+                  value => toggleSidebarUIState('is_conv_order_open', value)
+                "
+              >
+                <ConversationOrder
+                  attribute-type="contact_attribute"
+                  attribute-from="conversation_contact_panel"
+                  :contact-id="contact.id"
+                  :empty-state-message="
+                    $t('CONVERSATION_CUSTOM_ATTRIBUTES.NO_RECORDS_FOUND')
+                  "
+                />
+              </AccordionItem>
+            </div>
+            <div
+              v-else-if="element.name === 'conversation_actions'"
               class="conversation--actions"
             >
               <AccordionItem

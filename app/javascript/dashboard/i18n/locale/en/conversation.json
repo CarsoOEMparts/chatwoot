@@ -275,6 +275,8 @@
     },
     "ACCORDION": {
       "CONTACT_DETAILS": "Contact Details",
+      "CONVERSATION_ORDER": "Order Details",
+      "CONVERSATION_OFFER": "Offer Details",
       "CONVERSATION_ACTIONS": "Conversation Actions",
       "CONVERSATION_LABELS": "Conversation Labels",
       "CONVERSATION_INFO": "Conversation Information",
@@ -282,6 +284,41 @@
       "PREVIOUS_CONVERSATION": "Previous Conversations",
       "MACROS": "Macros"
     }
+  },
+  "CONVERSATION_ORDER": {
+    "TITLE": "Order Details",
+    "ORDER_ID": "Order ID",
+    "ORDER_EXTERNAL_ID": "External Order ID",
+    "ORDER_EXTERNAL_NR": "External Order Number",
+    "STATUS": "Status",
+    "CREATED_AT": "Created At",
+    "DISPATCH_DATE": "Dispatch Date",
+    "TOTAL_PROFIT": "Total Profit",
+    "PRODUCTS_TITLE": "Order Products",
+    "DELIVERY_TYPE": "Delivery Type",
+    "PRODUCTS_TABLE": {
+      "SKU": "SKU",
+      "MPN": "MPN",
+      "TITLE": "Product Title",
+      "PRICE": "Price",
+      "MARGIN": "Margin",
+      "QUANTITY": "Quantity"
+    },
+    "NO_PRODUCTS": "No products found for this order.",
+    "NO_ORDER": "Order not found",
+    "TRACKING_NUMBER": "Tracking Number",
+    "TRACKING_NUMBER_PLACEHOLDER": "Enter tracking number",
+    "TRACKING_NUMBER_SAVED": "Tracking number saved successfully",
+    "TRACKING_NUMBER_ERROR": "Unable to save tracking number. Please try again later"
+  },
+  "CONVERSATION_OFFER": {
+    "TITLE": "Offer Details",
+    "NO_OFFER": "Offer not found",
+    "OFFER_ID": "Offer ID",
+    "OFFER_EXTERNAL_ID": "External Offer ID",
+    "MPN": "MPN",
+    "PRICE": "Price",
+    "MARGIN": "Margin"
   },
   "CONVERSATION_CUSTOM_ATTRIBUTES": {
     "ADD_BUTTON_TEXT": "Create attribute",

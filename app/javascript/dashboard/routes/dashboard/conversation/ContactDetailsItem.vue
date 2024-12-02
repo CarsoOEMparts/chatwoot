@@ -10,7 +10,7 @@ export default {
 
 <template>
   <div class="overflow-auto" :class="compact ? 'py-0 px-0' : 'py-3 px-4'">
-    <div class="items-center flex justify-between mb-1.5">
+    <div class="items-center flex mb-1.5">
       <span class="text-sm font-medium text-slate-800 dark:text-slate-100">
         {{ title }}
       </span>
