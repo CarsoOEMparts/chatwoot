@@ -69,13 +69,6 @@ const getContactDetails = () => {
   }
 };
 
-const order = computed(() => {
-  return currentChat.value.additional_attributes?.order;
-});
-const offer = computed(() => {
-  return currentChat.value.additional_attributes?.offer;
-});
-
 watch(conversationId, (newConversationId, prevConversationId) => {
   if (newConversationId && newConversationId !== prevConversationId) {
     getContactDetails();
@@ -122,7 +115,7 @@ onMounted(() => {
         <template #item="{ element }">
           <div :key="element.name" class="bg-white dark:bg-gray-800">
             <div
-              v-if="element.name === 'conversation_offer' && offer"
+              v-if="element.name === 'conversation_offer'"
               class="conversation--offer"
             >
               <AccordionItem
@@ -143,7 +136,7 @@ onMounted(() => {
               </AccordionItem>
             </div>
             <div
-              v-else-if="element.name === 'conversation_order' && order"
+              v-else-if="element.name === 'conversation_order'"
               class="conversation--order"
             >
               <AccordionItem
