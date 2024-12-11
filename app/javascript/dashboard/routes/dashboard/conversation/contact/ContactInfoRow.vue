@@ -1,7 +1,7 @@
 <script>
-import { useAlert } from 'dashboard/composables';
-import EmojiOrIcon from 'shared/components/EmojiOrIcon.vue';
-import { copyTextToClipboard } from 'shared/helpers/clipboard';
+import { useAlert } from 'dashboard/composables'
+import EmojiOrIcon from 'shared/components/EmojiOrIcon.vue'
+import { copyTextToClipboard } from 'shared/helpers/clipboard'
 
 export default {
   components: {
@@ -94,6 +94,17 @@ export default {
       <span v-else class="text-sm text-slate-300 dark:text-slate-600">{{
         $t('CONTACT_PANEL.NOT_AVAILABLE')
       }}</span>
+
+      <woot-button
+        v-if="showCopy"
+        type="submit"
+        variant="clear"
+        size="tiny"
+        color-scheme="secondary"
+        icon="clipboard"
+        class-names="p-0"
+        @click="onCopy"
+      />
     </div>
   </div>
 </template>

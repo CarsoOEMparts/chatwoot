@@ -1,22 +1,22 @@
 <script>
-import { mapGetters } from 'vuex';
-import { useAlert } from 'dashboard/composables';
-import { dynamicTime } from 'shared/helpers/timeHelper';
-import { useAdmin } from 'dashboard/composables/useAdmin';
-import ContactInfoRow from './ContactInfoRow.vue';
-import Thumbnail from 'dashboard/components/widgets/Thumbnail.vue';
-import SocialIcons from './SocialIcons.vue';
-import EditContact from './EditContact.vue';
-import NewConversation from './NewConversation.vue';
-import ContactMergeModal from 'dashboard/modules/contact/ContactMergeModal.vue';
-import { getCountryFlag } from 'dashboard/helper/flag';
-import { BUS_EVENTS } from 'shared/constants/busEvents';
+import Thumbnail from 'dashboard/components/widgets/Thumbnail.vue'
+import { useAlert } from 'dashboard/composables'
+import { useAdmin } from 'dashboard/composables/useAdmin'
+import { getCountryFlag } from 'dashboard/helper/flag'
+import ContactMergeModal from 'dashboard/modules/contact/ContactMergeModal.vue'
+import { BUS_EVENTS } from 'shared/constants/busEvents'
+import { emitter } from 'shared/helpers/mitt'
+import { dynamicTime } from 'shared/helpers/timeHelper'
+import { mapGetters } from 'vuex'
 import {
+  getConversationDashboardRoute,
   isAConversationRoute,
   isAInboxViewRoute,
-  getConversationDashboardRoute,
-} from '../../../../helper/routeHelpers';
-import { emitter } from 'shared/helpers/mitt';
+} from '../../../../helper/routeHelpers'
+import ContactInfoRow from './ContactInfoRow.vue'
+import EditContact from './EditContact.vue'
+import NewConversation from './NewConversation.vue'
+import SocialIcons from './SocialIcons.vue'
 
 export default {
   components: {
@@ -67,6 +67,12 @@ export default {
     },
     additionalAttributes() {
       return this.contact.additional_attributes || {};
+    },
+    contactIdentifier() {
+      if (!this.contact.identifier) {
+        return '';
+      }
+      return this.contact.identifier.split('-').slice(0, -1).join('-');
     },
     location() {
       const {
@@ -208,7 +214,7 @@ export default {
               size="14"
               class="mt-0.5"
             />
-            <a
+            <!-- <a
               :href="contactProfileLink"
               class="text-base"
               target="_blank"
@@ -220,7 +226,7 @@ export default {
                 variant="clear"
                 color-scheme="secondary"
               />
-            </a>
+            </a> -->
           </div>
         </div>
 
@@ -245,11 +251,12 @@ export default {
             show-copy
           />
           <ContactInfoRow
-            v-if="contact.identifier"
-            :value="contact.identifier"
+            v-if="contactIdentifier"
+            :value="contactIdentifier"
             icon="contact-identify"
             emoji="🪪"
             :title="$t('CONTACT_PANEL.IDENTIFIER')"
+            show-copy
           />
           <ContactInfoRow
             :value="additionalAttributes.company_name"

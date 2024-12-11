@@ -2,48 +2,48 @@
 // TODO This is a huge component, we should split this up into separate composables
 // like `useSignature`, `useImageHandling`, `useFileUpload`, `useSpecialContent``
 import {
+  computed,
+  nextTick,
+  onMounted,
   ref,
   unref,
-  computed,
-  watch,
-  onMounted,
   useTemplateRef,
-  nextTick,
-} from 'vue';
+  watch,
+} from 'vue'
 
-import CannedResponse from '../conversation/CannedResponse.vue';
-import KeyboardEmojiSelector from './keyboardEmojiSelector.vue';
-import TagAgents from '../conversation/TagAgents.vue';
-import VariableList from '../conversation/VariableList.vue';
+import CannedResponse from '../conversation/CannedResponse.vue'
+import TagAgents from '../conversation/TagAgents.vue'
+import VariableList from '../conversation/VariableList.vue'
+import KeyboardEmojiSelector from './keyboardEmojiSelector.vue'
 
-import { useEmitter } from 'dashboard/composables/emitter';
-import { useI18n } from 'vue-i18n';
-import { useKeyboardEvents } from 'dashboard/composables/useKeyboardEvents';
-import { useTrack } from 'dashboard/composables';
-import { useUISettings } from 'dashboard/composables/useUISettings';
-import { useAlert } from 'dashboard/composables';
+import { useAlert, useTrack } from 'dashboard/composables'
+import { useEmitter } from 'dashboard/composables/emitter'
+import { useKeyboardEvents } from 'dashboard/composables/useKeyboardEvents'
+import { useUISettings } from 'dashboard/composables/useUISettings'
+import { useI18n } from 'vue-i18n'
 
-import { BUS_EVENTS } from 'shared/constants/busEvents';
-import { CONVERSATION_EVENTS } from 'dashboard/helper/AnalyticsHelper/events';
 import {
-  MESSAGE_EDITOR_MENU_OPTIONS,
   MESSAGE_EDITOR_IMAGE_RESIZES,
-} from 'dashboard/constants/editor';
+  MESSAGE_EDITOR_MENU_OPTIONS,
+} from 'dashboard/constants/editor'
+import { CONVERSATION_EVENTS } from 'dashboard/helper/AnalyticsHelper/events'
+import { BUS_EVENTS } from 'shared/constants/busEvents'
 
 import {
-  messageSchema,
   buildEditor,
-  EditorView,
-  MessageMarkdownTransformer,
-  MessageMarkdownSerializer,
   EditorState,
+  EditorView,
+  MessageMarkdownSerializer,
+  MessageMarkdownTransformer,
+  messageSchema,
   Selection,
-} from '@chatwoot/prosemirror-schema';
+} from '@chatwoot/prosemirror-schema'
 import {
   suggestionsPlugin,
   triggerCharacters,
-} from '@chatwoot/prosemirror-schema/src/mentions/plugin';
+} from '@chatwoot/prosemirror-schema/src/mentions/plugin'
 
+import { createTypingIndicator } from '@chatwoot/utils'
 import {
   appendSignature,
   findNodeToInsertImage,
@@ -52,14 +52,13 @@ import {
   removeSignature as removeSignatureHelper,
   scrollCursorIntoView,
   setURLWithQueryAndSize,
-} from 'dashboard/helper/editorHelper';
+} from 'dashboard/helper/editorHelper'
+import { uploadFile } from 'dashboard/helper/uploadHelper'
+import { checkFileSizeLimit } from 'shared/helpers/FileHelper'
 import {
-  hasPressedEnterAndNotCmdOrShift,
   hasPressedCommandAndEnter,
-} from 'shared/helpers/KeyboardHelpers';
-import { createTypingIndicator } from '@chatwoot/utils';
-import { checkFileSizeLimit } from 'shared/helpers/FileHelper';
-import { uploadFile } from 'dashboard/helper/uploadHelper';
+  hasPressedEnterAndNotCmdOrShift,
+} from 'shared/helpers/KeyboardHelpers'
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
@@ -770,7 +769,7 @@ useEmitter(BUS_EVENTS.INSERT_INTO_RICH_EDITOR, insertContentIntoEditor);
 }
 
 .ProseMirror-woot-style {
-  @apply overflow-auto min-h-[5rem] max-h-[7.5rem];
+  @apply overflow-auto min-h-[10rem] max-h-[15rem];
 }
 
 .ProseMirror-prompt {
