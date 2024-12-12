@@ -72,6 +72,7 @@ const orderDispatchDate = computed(() => order.value.orderDispatchDateFormatted)
 const orderTotalProfit = computed(() => order.value.totalProfit);
 const orderExternalOrderId = computed(() => order.value.orderExternalOrderId);
 const orderExternalOrderNr = computed(() => order.value.orderExternalOrderNr);
+const orderExternalOrderUrl = computed(() => order.value.orderExternalOrderUrl);
 
 const orderProducts = computed(() => order.value.orderProducts || []);
 
@@ -183,6 +184,19 @@ onMounted(() => {
               class-names="p-0 ml-1"
               @click="onCopy(orderExternalOrderId)"
             />
+            <a
+              :href="orderExternalOrderUrl"
+              class="text-base"
+              target="_blank"
+              rel="noopener nofollow noreferrer"
+            >
+              <woot-button
+                size="tiny"
+                icon="open"
+                variant="clear"
+                color-scheme="secondary"
+              />
+            </a>
           </template>
         </ContactDetailsItem>
         <ContactDetailsItem v-if="orderExternalOrderNr"
