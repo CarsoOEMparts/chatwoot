@@ -120,7 +120,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
 
   def permitted_update_params
     # TODO: Move the other conversation attributes to this method and remove specific endpoints for each attribute
-    params.permit(:priority, additional_attributes: {})
+    params.permit(:priority, :cached_label_list, additional_attributes: {}, custom_attributes: {})
   end
 
   def update_last_seen_on_conversation(last_seen_at, update_assignee)
