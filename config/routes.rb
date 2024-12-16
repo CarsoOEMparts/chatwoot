@@ -80,6 +80,7 @@ Rails.application.routes.draw do
           namespace :channels do
             resource :twilio_channel, only: [:create]
           end
+          resources :api_channels, only: [:index, :show]
           resources :conversations, only: [:index, :create, :show, :update] do
             collection do
               get :meta

@@ -5,6 +5,7 @@
 ### Start the Chatwoot services:
 ```bash
    docker compose -f docker-compose.production.yaml up -d
+   docker compose -f docker-compose.production.yaml up -d --remove-orphans
 ```
 ### Run the database migrations:
 ```bash
@@ -62,6 +63,7 @@ docker compose run --rm rails bundle exec rails db:chatwoot_prepare
 
 # seed the database
 docker compose run --rm rails bundle exec make db_seed
+docker compose run --rm rails bundle exec tmp:cache:clear
 
 # run the server and worker
 docker compose up

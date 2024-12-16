@@ -45,11 +45,11 @@ class Public::Api::V1::Inboxes::MessagesController < Public::Api::V1::InboxesCon
   end
 
   def message_update_params
-    params.permit(submitted_values: [:name, :title, :value, { csat_survey_response: [:feedback_message, :rating] }])
+    params.permit(:content, submitted_values: [:name, :title, :value, { csat_survey_response: [:feedback_message, :rating] }])
   end
 
   def permitted_params
-    params.permit(:content, :echo_id)
+    params.permit(:content, :echo_id, :source_id)
   end
 
   def set_message
@@ -61,6 +61,7 @@ class Public::Api::V1::Inboxes::MessagesController < Public::Api::V1::InboxesCon
       account_id: @conversation.account_id,
       sender: @contact_inbox.contact,
       content: permitted_params[:content],
+      source_id: permitted_params[:source_id],
       inbox_id: @conversation.inbox_id,
       echo_id: permitted_params[:echo_id],
       message_type: :incoming

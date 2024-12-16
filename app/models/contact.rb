@@ -47,9 +47,10 @@ class Contact < ApplicationRecord
   validates :email, allow_blank: true, uniqueness: { scope: [:account_id], case_sensitive: false },
                     format: { with: Devise.email_regexp, message: I18n.t('errors.contacts.email.invalid') }
   validates :identifier, allow_blank: true, uniqueness: { scope: [:account_id] }
-  validates :phone_number,
-            allow_blank: true, uniqueness: { scope: [:account_id] },
-            format: { with: /\+[1-9]\d{1,14}\z/, message: I18n.t('errors.contacts.phone_number.invalid') }
+  validates :phone_number, allow_blank: true, uniqueness: { scope: [:account_id] }
+  # validates :phone_number,
+  #           allow_blank: true, uniqueness: { scope: [:account_id] },
+  #           format: { with: /\+[0-9]\d{1,14}\z/, message: I18n.t('errors.contacts.phone_number.invalid') }
 
   belongs_to :account
   has_many :conversations, dependent: :destroy_async
@@ -184,7 +185,7 @@ class Contact < ApplicationRecord
   def phone_number_format
     return if phone_number.blank?
 
-    self.phone_number = phone_number_was unless phone_number.match?(/\+[1-9]\d{1,14}\z/)
+    self.phone_number = phone_number_was unless phone_number.match?(/\+[0-9]\d{1,14}\z/)
   end
 
   def email_format

@@ -5,7 +5,14 @@ class MessageFinder
   end
 
   def perform
-    current_messages
+    if @params[:source_id].present? || @params[:sender_type].present?
+      scope = messages
+      scope = scope.reorder('created_at desc').where(source_id: @params[:source_id]) if @params[:source_id].present?
+      scope = scope.reorder('created_at desc').where(sender_type: @params[:sender_type]) if @params[:sender_type].present?
+      scope
+    else
+      current_messages
+    end
   end
 
   private

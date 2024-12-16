@@ -32,6 +32,7 @@ class ConversationBuilder
       contact_inbox_id: @contact_inbox.id,
       additional_attributes: additional_attributes,
       custom_attributes: custom_attributes,
+      identifier: params[:identifier],
       snoozed_until: params[:snoozed_until],
       assignee_id: params[:assignee_id],
       team_id: params[:team_id]
