@@ -42,7 +42,6 @@ class Api::V1::Widget::BaseController < ApplicationController
         referer: permitted_params[:message][:referer_url]
       },
       custom_attributes: permitted_params[:custom_attributes].presence || {}
-      label_list: permitted_params[:labels]
     }
   end
 
