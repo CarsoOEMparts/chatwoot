@@ -257,6 +257,7 @@ export default {
             emoji="🪪"
             :title="$t('CONTACT_PANEL.IDENTIFIER')"
             show-copy
+            highlight
           />
           <ContactInfoRow
             :value="additionalAttributes.company_name"

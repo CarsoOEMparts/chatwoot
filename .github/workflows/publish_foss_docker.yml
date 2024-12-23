@@ -9,7 +9,7 @@ on:
   push:
     branches:
       - develop
-      - master
+      # - master
     tags:
       - v*
   workflow_dispatch:

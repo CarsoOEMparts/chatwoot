@@ -28,6 +28,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    highlight: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     async onCopy(e) {
@@ -55,6 +59,7 @@ export default {
       <span
         v-if="value"
         class="overflow-hidden text-sm whitespace-nowrap text-ellipsis"
+        :class="{ 'text-red-500': highlight }"
         :title="value"
       >
         {{ value }}
@@ -88,6 +93,7 @@ export default {
       <span
         v-if="value"
         class="overflow-hidden text-sm whitespace-nowrap text-ellipsis"
+        :class="{ 'text-red-500': highlight }"
       >
         {{ value }}
       </span>
