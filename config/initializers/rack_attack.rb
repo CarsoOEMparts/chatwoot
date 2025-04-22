@@ -1,3 +1,5 @@
+require 'ipaddr'
+
 class Rack::Attack
   ### Configure Cache ###
 
@@ -17,12 +19,19 @@ class Rack::Attack
     # You many need to specify a method to fetch the correct remote IP address
     # if the web server is behind a load balancer.
     def remote_ip
-      @remote_ip ||= (env['action_dispatch.remote_ip'] || ip).to_s
+      # Get real IP when behind proxy or load balancer
+      @remote_ip ||= (
+        env['HTTP_X_FORWARDED_FOR']&.split(',')&.first ||
+        env['action_dispatch.remote_ip'] ||
+        ip
+      ).to_s
     end
 
     def allowed_ip?
       allowed_ips = ['127.0.0.1', '::1']
-      allowed_ips.include?(remote_ip)
+      # Add Docker internal network IPs to allow list
+      docker_ips = ['172.18.0.0/16', '172.17.0.0/16', '172.19.0.0/16', '172.20.0.0/16', '192.168.0.0/16']
+      allowed_ips.include?(remote_ip) || docker_ips.any? { |cidr| IPAddr.new(cidr).include?(remote_ip) rescue false }
     end
 
     # Rails would allow requests to paths with extentions, so lets compare against the path with extention stripped
@@ -30,6 +39,11 @@ class Rack::Attack
     def path_without_extentions
       path[/^[^.]+/]
     end
+  end
+
+  # Safelist requests from Docker networks and internal IPs
+  safelist('allow internal networks') do |req|
+    req.allowed_ip?
   end
 
   ### Throttle Spammy Clients ###
@@ -46,7 +60,9 @@ class Rack::Attack
   #
   # Key: "rack::attack:#{Time.now.to_i/:period}:req/ip:#{req.ip}"
 
-  throttle('req/ip', limit: ENV.fetch('RACK_ATTACK_LIMIT', '3000').to_i, period: 1.minute, &:ip)
+  throttle('req/ip', limit: ENV.fetch('RACK_ATTACK_LIMIT', '3000').to_i, period: 1.minute) do |req|
+    req.remote_ip unless req.allowed_ip?
+  end
 
   ###-----------------------------------------------###
   ###-----Authentication Related Throttling---------###
@@ -54,7 +70,7 @@ class Rack::Attack
 
   ### Prevent Brute-Force Super Admin Login Attacks ###
   throttle('super_admin_login/ip', limit: 5, period: 5.minutes) do |req|
-    req.ip if req.path_without_extentions == '/super_admin/sign_in' && req.post?
+    req.remote_ip if req.path_without_extentions == '/super_admin/sign_in' && req.post? && !req.allowed_ip?
   end
 
   throttle('super_admin_login/email', limit: 5, period: 15.minutes) do |req|
@@ -69,7 +85,7 @@ class Rack::Attack
 
   # ### Prevent Brute-Force Login Attacks ###
   throttle('login/ip', limit: 5, period: 5.minutes) do |req|
-    req.ip if req.path_without_extentions == '/auth/sign_in' && req.post?
+    req.remote_ip if req.path_without_extentions == '/auth/sign_in' && req.post? && !req.allowed_ip?
   end
 
   throttle('login/email', limit: 10, period: 15.minutes) do |req|
@@ -84,7 +100,7 @@ class Rack::Attack
 
   ## Reset password throttling
   throttle('reset_password/ip', limit: 5, period: 30.minutes) do |req|
-    req.ip if req.path_without_extentions == '/auth/password' && req.post?
+    req.remote_ip if req.path_without_extentions == '/auth/password' && req.post? && !req.allowed_ip?
   end
 
   throttle('reset_password/email', limit: 5, period: 1.hour) do |req|
@@ -96,12 +112,12 @@ class Rack::Attack
 
   ## Resend confirmation throttling
   throttle('resend_confirmation/ip', limit: 5, period: 30.minutes) do |req|
-    req.ip if req.path_without_extentions == '/api/v1/profile/resend_confirmation' && req.post?
+    req.remote_ip if req.path_without_extentions == '/api/v1/profile/resend_confirmation' && req.post? && !req.allowed_ip?
   end
 
   ## Prevent Brute-Force Signup Attacks ###
   throttle('accounts/ip', limit: 5, period: 30.minutes) do |req|
-    req.ip if req.path_without_extentions == '/api/v1/accounts' && req.post?
+    req.remote_ip if req.path_without_extentions == '/api/v1/accounts' && req.post? && !req.allowed_ip?
   end
 
   ##-----------------------------------------------##
@@ -116,17 +132,17 @@ class Rack::Attack
   if ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_RACK_ATTACK_WIDGET_API', true))
     ## Prevent Conversation Bombing on Widget APIs ###
     throttle('api/v1/widget/conversations', limit: 6, period: 12.hours) do |req|
-      req.ip if req.path_without_extentions == '/api/v1/widget/conversations' && req.post?
+      req.remote_ip if req.path_without_extentions == '/api/v1/widget/conversations' && req.post? && !req.allowed_ip?
     end
 
     ## Prevent Contact update Bombing in Widget API ###
     throttle('api/v1/widget/contacts', limit: 60, period: 1.hour) do |req|
-      req.ip if req.path_without_extentions == '/api/v1/widget/contacts' && (req.patch? || req.put?)
+      req.remote_ip if req.path_without_extentions == '/api/v1/widget/contacts' && (req.patch? || req.put?) && !req.allowed_ip?
     end
 
     ## Prevent Conversation Bombing through multiple sessions
     throttle('widget?website_token={website_token}&cw_conversation={x-auth-token}', limit: 5, period: 1.hour) do |req|
-      req.ip if req.path_without_extentions == '/widget' && ActionDispatch::Request.new(req.env).params['cw_conversation'].blank?
+      req.remote_ip if req.path_without_extentions == '/widget' && ActionDispatch::Request.new(req.env).params['cw_conversation'].blank? && !req.allowed_ip?
     end
   end
 
