@@ -18,6 +18,11 @@ class Messages::MessageBuilder
 
   def perform
     # Debug logging to see what parameters we receive
+    puts "=== MESSAGEBUILDER DEBUG ==="
+    puts "Params: #{@params.inspect}"
+    puts "external_created_at: #{@params[:external_created_at].inspect}"
+    puts "============================"
+    
     Rails.logger.info "MessageBuilder params: #{@params.inspect}"
     Rails.logger.info "external_created_at param: #{@params[:external_created_at].inspect}"
     
@@ -29,6 +34,7 @@ class Messages::MessageBuilder
     # Set custom created_at if provided
     if @params[:external_created_at].present?
       timestamp = parse_external_timestamp(@params[:external_created_at])
+      puts "Parsed timestamp: #{timestamp.inspect}"
       Rails.logger.info "Parsed timestamp: #{timestamp.inspect}"
       if timestamp
         @message.update_columns(created_at: timestamp)
