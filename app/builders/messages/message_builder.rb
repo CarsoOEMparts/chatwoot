@@ -21,6 +21,20 @@ class Messages::MessageBuilder
     process_attachments
     process_emails
     @message.save!
+    
+    # Set custom created_at if provided
+    if @params[:external_created_at].present?
+      timestamp = parse_external_timestamp(@params[:external_created_at])
+      if timestamp
+        @message.update_columns(created_at: timestamp)
+        # Only update conversation's last_activity_at if the external timestamp is newer than current last_activity_at
+        # This prevents old imported messages from making the conversation appear inactive
+        if @conversation.last_activity_at.nil? || timestamp > @conversation.last_activity_at
+          @conversation.update_columns(last_activity_at: timestamp)
+        end
+      end
+    end
+    
     @message
   end
 
@@ -117,7 +131,7 @@ class Messages::MessageBuilder
   end
 
   def external_created_at
-    @params[:external_created_at].present? ? { external_created_at: @params[:external_created_at] } : {}
+    @params[:external_created_at].present? ? { content_attributes: { external_created_at: @params[:external_created_at] } } : {}
   end
 
   def automation_rule_id
@@ -152,5 +166,12 @@ class Messages::MessageBuilder
       echo_id: @params[:echo_id],
       source_id: @params[:source_id]
     }.merge(external_created_at).merge(automation_rule_id).merge(campaign_id).merge(template_params)
+  end
+
+  # Parse external timestamp safely
+  def parse_external_timestamp(timestamp_str)
+    Time.parse(timestamp_str)
+  rescue ArgumentError, TypeError
+    nil
   end
 end
