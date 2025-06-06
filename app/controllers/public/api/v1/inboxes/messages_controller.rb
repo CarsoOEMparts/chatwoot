@@ -9,6 +9,9 @@ class Public::Api::V1::Inboxes::MessagesController < Public::Api::V1::InboxesCon
     @message = @conversation.messages.new(message_params)
     build_attachment
     @message.save!
+    
+    # Set custom created_at if external_created_at is provided
+    handle_external_created_at if params[:external_created_at].present?
   end
 
   def update
@@ -20,6 +23,30 @@ class Public::Api::V1::Inboxes::MessagesController < Public::Api::V1::InboxesCon
   end
 
   private
+
+  def handle_external_created_at
+    timestamp = parse_external_timestamp(params[:external_created_at])
+    return unless timestamp
+
+    # Update message created_at
+    @message.update_columns(created_at: timestamp)
+    
+    # Update message content_attributes to store original external_created_at
+    content_attrs = @message.content_attributes || {}
+    content_attrs['external_created_at'] = params[:external_created_at]
+    @message.update_columns(content_attributes: content_attrs)
+    
+    # Only update conversation's last_activity_at if the external timestamp is newer
+    if @conversation.last_activity_at.nil? || timestamp > @conversation.last_activity_at
+      @conversation.update_columns(last_activity_at: timestamp)
+    end
+  end
+
+  def parse_external_timestamp(timestamp_str)
+    Time.parse(timestamp_str)
+  rescue ArgumentError, TypeError
+    nil
+  end
 
   def build_attachment
     return if params[:attachments].blank?
@@ -49,7 +76,7 @@ class Public::Api::V1::Inboxes::MessagesController < Public::Api::V1::InboxesCon
   end
 
   def permitted_params
-    params.permit(:content, :echo_id, :source_id)
+    params.permit(:content, :echo_id, :source_id, :external_created_at)
   end
 
   def set_message
