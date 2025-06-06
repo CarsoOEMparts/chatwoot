@@ -31,11 +31,6 @@ class Public::Api::V1::Inboxes::MessagesController < Public::Api::V1::InboxesCon
     # Update message created_at
     @message.update_columns(created_at: timestamp)
     
-    # Update message content_attributes to store original external_created_at
-    content_attrs = @message.content_attributes || {}
-    content_attrs['external_created_at'] = params[:external_created_at]
-    @message.update_columns(content_attributes: content_attrs)
-    
     # Only update conversation's last_activity_at if the external timestamp is newer
     if @conversation.last_activity_at.nil? || timestamp > @conversation.last_activity_at
       @conversation.update_columns(last_activity_at: timestamp)

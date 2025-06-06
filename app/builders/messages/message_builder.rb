@@ -131,7 +131,7 @@ class Messages::MessageBuilder
   end
 
   def external_created_at
-    @params[:external_created_at].present? ? { content_attributes: { external_created_at: @params[:external_created_at] } } : {}
+    {}
   end
 
   def automation_rule_id
