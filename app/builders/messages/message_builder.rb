@@ -18,22 +18,16 @@ class Messages::MessageBuilder
 
   def perform
     @message = @conversation.messages.build(message_params)
+    
+    # Set custom created_at BEFORE saving if provided
+    if @params[:external_created_at].present?
+      timestamp = parse_external_timestamp(@params[:external_created_at])
+      @message.created_at = timestamp if timestamp
+    end
+    
     process_attachments
     process_emails
     @message.save!
-    
-    # Set custom created_at if provided
-    if @params[:external_created_at].present?
-      timestamp = parse_external_timestamp(@params[:external_created_at])
-      if timestamp
-        @message.update_columns(created_at: timestamp)
-        # Only update conversation's last_activity_at if the external timestamp is newer than current last_activity_at
-        # This prevents old imported messages from making the conversation appear inactive
-        if @conversation.last_activity_at.nil? || timestamp > @conversation.last_activity_at
-          @conversation.update_columns(last_activity_at: timestamp)
-        end
-      end
-    end
     
     @message
   end

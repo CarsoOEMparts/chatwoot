@@ -7,11 +7,12 @@ class Public::Api::V1::Inboxes::MessagesController < Public::Api::V1::InboxesCon
 
   def create
     @message = @conversation.messages.new(message_params)
+    
+    # Set custom created_at BEFORE saving if external_created_at is provided
+    handle_external_created_at_before_save if params[:external_created_at].present?
+    
     build_attachment
     @message.save!
-    
-    # Set custom created_at if external_created_at is provided
-    handle_external_created_at if params[:external_created_at].present?
   end
 
   def update
@@ -24,17 +25,12 @@ class Public::Api::V1::Inboxes::MessagesController < Public::Api::V1::InboxesCon
 
   private
 
-  def handle_external_created_at
+  def handle_external_created_at_before_save
     timestamp = parse_external_timestamp(params[:external_created_at])
     return unless timestamp
 
-    # Update message created_at
-    @message.update_columns(created_at: timestamp)
-    
-    # Only update conversation's last_activity_at if the external timestamp is newer
-    if @conversation.last_activity_at.nil? || timestamp > @conversation.last_activity_at
-      @conversation.update_columns(last_activity_at: timestamp)
-    end
+    # Set created_at before saving to avoid callback issues
+    @message.created_at = timestamp
   end
 
   def parse_external_timestamp(timestamp_str)
